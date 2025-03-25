@@ -5,7 +5,7 @@
 ## Инструкция
 * git clone https://github.com/497d2c8f/ivanefremovbot.git
 * cd ivanefremovbot
-* вставить свой BOT_TOKEN сервиса ivanefremovbot-aiogram в файле compose.yaml
+* в файле compose.yaml присвоить свой токен переменной среды BOT_TOKEN сервиса ivanefremovbot-aiogram
 * sudo docker compose up
 
 ## Краткое описание архитектуры
