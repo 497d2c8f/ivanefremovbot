@@ -1,0 +1,54 @@
+services:
+
+ ivanefremovbot-postgresql:
+  container_name: ivanefremovbot-postgresql
+  build: postgresql/
+  environment:
+   POSTGRES_MULTIPLE_DATABASES: 'ivanefremovbot'
+   POSTGRES_HOST_AUTH_METHOD: trust
+  restart: always
+  volumes:
+   - postgresql_data:/var/lib/postgresql/data/
+
+ ivanefremovbot-redis:
+  container_name: ivanefremovbot-redis
+  build: redis/
+  restart: always
+  develop:
+   watch:
+    - action: rebuild
+      path: redis/
+      target: /usr/local/etc/redis/
+
+ ivanefremovbot-django:
+  container_name: ivanefremovbot-django
+  build: django/
+  environment:
+   HOST_NAME: ivanefremovbot-django
+   POSTGRESQL_HOST: ivanefremovbot-postgresql
+   POSTGRESQL_PORT: 5432
+   POSTGRESQL_NAME: ivanefremovbot
+   POSTGRESQL_USER: ivanefremovbot
+   REDIS_HOST: ivanefremovbot-redis
+  restart: always
+  develop:
+   watch:
+    - action: rebuild
+      path: django/
+      target: /django/
+
+ ivanefremovbot-aiogram:
+  container_name: ivanefremovbot-aiogram
+  build: aiogram/
+  environment:
+   BACKEND_HOST: ivanefremovbot-django
+   BOT_TOKEN: 'ВСТАВИТЬ СВОЙ ТОКЕН'
+  restart: always
+  develop:
+   watch:
+    - action: rebuild
+      path: aiogram/
+      target: /aiogram/
+
+volumes:
+ postgresql_data:
