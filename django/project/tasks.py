@@ -39,15 +39,10 @@ def tasks_reached_deadline_handler():
 	timedelta = datetime.timedelta(seconds=NOTIFICATION_INTERVAL)
 
 	tasks_reached_deadline = Task.objects.filter(deadline__lt=now)
-
-#	tasks_reached_deadline.update(deadline = F("deadline") + timedelta)
-	for task in tasks_reached_deadline:
-		task.deadline = now + timedelta
-		task.save()
+	tasks_reached_deadline.update(deadline = now + timedelta)
 
 	r = redis.from_url(f'redis://{os.getenv("REDIS_HOST")}:6379/0')
-	r.setex(
+	r.set(
 		'tasks_reached_deadline',
-		NOTIFICATION_INTERVAL,
 		pickle.dumps([{'telegram_user_id': task.telegram_user_id, 'title': task.title} for task in tasks_reached_deadline])
 	)

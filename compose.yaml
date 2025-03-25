@@ -30,19 +30,38 @@ services:
    POSTGRESQL_NAME: ivanefremovbot
    POSTGRESQL_USER: ivanefremovbot
    REDIS_HOST: ivanefremovbot-redis
+   DJANGO_SUPERUSER_USERNAME: admin
+   DJANGO_SUPERUSER_PASSWORD: admin
+   DJANGO_SUPERUSER_EMAIL: ''
   restart: always
+  volumes:
+   - static:/django/project/static/
   develop:
    watch:
     - action: rebuild
       path: django/
       target: /django/
 
+ ivanefremovbot-nginx:
+  container_name: ivanefremovbot-nginx
+  build: nginx/
+  ports:
+   - '8000:8000'
+  restart: always
+  volumes:
+   - static:/nginx/static/
+  develop:
+   watch:
+    - action: rebuild
+      path: nginx/
+      target: /etc/nginx/
+
  ivanefremovbot-aiogram:
   container_name: ivanefremovbot-aiogram
   build: aiogram/
   environment:
-   BACKEND_HOST: ivanefremovbot-django
-   BOT_TOKEN: 'ВСТАВИТЬ СВОЙ ТОКЕН'
+   BACKEND_HOST: ivanefremovbot-nginx
+   BOT_TOKEN: 'your_bot_token'
   restart: always
   develop:
    watch:
@@ -52,3 +71,4 @@ services:
 
 volumes:
  postgresql_data:
+ static:

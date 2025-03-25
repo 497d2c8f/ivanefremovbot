@@ -5,8 +5,10 @@ run pip install --upgrade pip && pip install -r requirements
 copy . .
 entrypoint \
 	cd project && \
+	python3 manage.py collectstatic --noinput && \
 	python3 manage.py makemigrations && \
 	python3 manage.py migrate && \
+#	python3 manage.py createsuperuser --noinput && \
 	celery multi start w1 -A tasks -B --loglevel=INFO \
 		--pidfile="/django/celery/%n.pid" \
 		--logfile="/django/celery/%n%I.log" && \
